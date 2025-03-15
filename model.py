@@ -11,17 +11,22 @@ GGML_QUIET = os.getenv('GGML_QUIET', '1') == '1'
 if GGML_QUIET:
     sys.stderr = open(os.devnull if os.name != 'nt' else 'nul', 'w')
 
+def get_base_path():
+    """获取基础路径，兼容 PyInstaller 打包"""
+    return getattr(sys, '_MEIPASS', os.path.dirname(os.path.abspath(__file__)))
+
+
+def get_model_path():
+    """动态获取模型路径，兼容 PyInstaller 打包"""
+    base_path = get_base_path()
+    return os.path.join(base_path, 'models', 'embedding.gguf')
+
 
 class ModelManager:
     def __init__(self):
         self.llm = None
-        self.model_path = self._get_model_path()
+        self.model_path = get_model_path()
         self.verbose = os.getenv('LLAMA_VERBOSE', '0') == '1'
-
-    def _get_model_path(self):
-        """动态获取模型路径，兼容 PyInstaller 打包"""
-        base_path = sys._MEIPASS if getattr(sys, 'frozen', False) else os.path.dirname(__file__)
-        return os.path.join(base_path, 'models', 'embedding.gguf')
 
     def initialize(self):
         """初始化模型"""
