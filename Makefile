@@ -42,18 +42,21 @@ PYINSTALLER_BASE_OPTS = --strip --noupx \
 build: $(TARGET)
 
 linux-amd64:
+	rm -rf dist/embedding-server-linux-amd64
 	docker buildx build --platform linux/amd64 -t embedding-amd64-builder -o type=docker .
 	docker run --platform linux/amd64 --rm \
 		-v "$$(pwd)":/app -w /app embedding-amd64-builder \
-		/bin/bash -c "python3 -m PyInstaller $(PYINSTALLER_BASE_OPTS) --add-binary '/usr/local/lib64/python3.12/site-packages/llama_cpp:llama_cpp' run.py -n embedding-server-amd64"
+		/bin/bash -c "python3 -m PyInstaller $(PYINSTALLER_BASE_OPTS) --add-binary '/usr/local/lib64/python3.12/site-packages/llama_cpp:llama_cpp' run.py -n embedding-server-linux-amd64"
 
 linux-arm64:
+	rm -rf dist/embedding-server-linux-arm64
 	docker buildx build --platform linux/arm64 -t embedding-arm64-builder -o type=docker .
 	docker run --platform linux/arm64 --rm \
 		-v "$$(pwd)":/app -w /app embedding-arm64-builder \
-		/bin/bash -c "python3 -m PyInstaller $(PYINSTALLER_BASE_OPTS) --add-binary '/usr/local/lib64/python3.12/site-packages/llama_cpp:llama_cpp' run.py -n embedding-server-arm64"
+		/bin/bash -c "python3 -m PyInstaller $(PYINSTALLER_BASE_OPTS) --add-binary '/usr/local/lib64/python3.12/site-packages/llama_cpp:llama_cpp' run.py -n embedding-server-linux-arm64"
 
 darwin-arm64: pre
+	rm -rf dist/embedding-server-darwin-arm64
 	python3 -m PyInstaller $(PYINSTALLER_BASE_OPTS) \
 		--add-binary '.venv/lib/python3.12/site-packages/llama_cpp:llama_cpp' \
 		run.py -n embedding-server-darwin-arm64
