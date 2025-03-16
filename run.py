@@ -1,8 +1,7 @@
 import sys
 import traceback
 
-from src.api.embedding import app
-from src.models.model import model_manager
+from src import create_app
 from src.utils.gunicorn_app import StandaloneApplication
 from src.utils.logger import logger
 
@@ -14,8 +13,7 @@ def is_packaged():
 
 if __name__ == '__main__':
     logger.info("Server start")
-    # 初始化模型
-    model_manager.initialize()
+    app = create_app()
 
     if is_packaged():
         logger.info("Starting Gunicorn in packaged mode")

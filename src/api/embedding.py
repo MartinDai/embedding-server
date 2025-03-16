@@ -1,11 +1,11 @@
-from flask import Flask, request, jsonify
+from flask import request, jsonify, Blueprint
 
-from src.utils.logger import logger
 from src.models.model import model_manager
+from src.utils.logger import logger
 
-app = Flask(__name__)
+embedding_bp = Blueprint("embedding", __name__)
 
-@app.route('/embedding', methods=['POST'])
+@embedding_bp.route('/embedding', methods=['POST'])
 def embedding_endpoint():
     try:
         data = request.get_json()
