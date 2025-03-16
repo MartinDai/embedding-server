@@ -4,20 +4,23 @@ import sys
 import numpy as np
 from llama_cpp import Llama
 
-from logger import logger
+from src.utils.logger import logger
 
 # 检查环境变量控制 GGML 日志
 GGML_QUIET = os.getenv('GGML_QUIET', '1') == '1'
 if GGML_QUIET:
     sys.stderr = open(os.devnull if os.name != 'nt' else 'nul', 'w')
 
+
 def get_base_path():
-    """获取基础路径，兼容 PyInstaller 打包"""
-    return getattr(sys, '_MEIPASS', os.path.dirname(os.path.abspath(__file__)))
+    if getattr(sys, '_MEIPASS', None):
+        return sys._MEIPASS
+    else:
+        current_dir = os.path.dirname(os.path.abspath(__file__))
+        return os.path.dirname(os.path.dirname(current_dir))
 
 
 def get_model_path():
-    """动态获取模型路径，兼容 PyInstaller 打包"""
     base_path = get_base_path()
     return os.path.join(base_path, 'models', 'embedding.gguf')
 

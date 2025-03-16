@@ -3,9 +3,9 @@ import traceback
 
 import gunicorn.app.base
 
-from app import app
-from logger import logger
-from model import model_manager
+from src.api.embedding import app
+from src.utils.logger import logger
+from src.models.model import model_manager
 
 
 # 判断是否为 PyInstaller 打包环境

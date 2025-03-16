@@ -1,7 +1,7 @@
 from flask import Flask, request, jsonify
 
-from logger import logger
-from model import model_manager
+from src.utils.logger import logger
+from src.models.model import model_manager
 
 app = Flask(__name__)
 
