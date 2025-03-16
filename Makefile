@@ -33,7 +33,8 @@ pre:
 
 # 通用的 PyInstaller 参数
 PYINSTALLER_BASE_OPTS = --strip --noupx \
-	--add-data 'models/embedding.gguf:models/' \
+	--add-data 'models/:models/' \
+	--add-data '.env:.' \
 	--hidden-import gunicorn \
 	--collect-all gunicorn \
 	--hidden-import llama_cpp

@@ -23,7 +23,7 @@ if __name__ == '__main__':
             'threads': 4,
             'worker_class': 'gthread',
             'timeout': 60,
-            'loglevel': 'debug',
+            'loglevel': 'info',
         }
         try:
             logger.info("Attempting to start Gunicorn with options: %s", options)
