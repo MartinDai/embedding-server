@@ -1,13 +1,14 @@
 from flask import Flask
 
-from src.models.model import model_manager
+from src.models.onnx_model_manager import onnx_model_manager
 
 
 def create_app():
     app = Flask(__name__)
 
     # 初始化模型
-    model_manager.initialize()
+    # gguf_model_manager.initialize()
+    onnx_model_manager.initialize()
 
     # 注册路由
     from src.api.embedding import embedding_bp

@@ -8,7 +8,7 @@ from llama_cpp import Llama
 from src.config.settings import settings
 from src.utils.logger import logger
 
-class ModelManager:
+class GgufModelManager:
     def __init__(self):
         self.llm: Optional[Llama] = None
         self.model_path = settings.MODEL_PATH
@@ -19,7 +19,7 @@ class ModelManager:
             logger.info("Model already initialized")
             return
 
-        logger.info(f"Loading model from: {self.model_path}")
+        logger.info(f"Loading GGUF model from: {self.model_path}")
         if not os.path.exists(self.model_path):
             logger.error(f"Model file not found at {self.model_path}")
             sys.exit(1)
@@ -35,7 +35,7 @@ class ModelManager:
                 embedding=True,
                 verbose=settings.LLAMA_VERBOSE
             )
-            logger.info("Model loaded successfully")
+            logger.info("GGUF Model loaded successfully")
         except Exception as e:
             logger.error(f"Failed to load model: {str(e)}")
             sys.exit(1)
@@ -53,4 +53,4 @@ class ModelManager:
 
 
 # 单例实例
-model_manager = ModelManager()
+gguf_model_manager = GgufModelManager()

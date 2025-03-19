@@ -36,4 +36,4 @@ if __name__ == '__main__':
             logger.info("Main block completed")
     else:
         logger.info("Starting Flask development server")
-        app.run(host='0.0.0.0', port=9999, debug=True)
+        app.run(host='0.0.0.0', port=9999, debug=False)

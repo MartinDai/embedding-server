@@ -45,15 +45,17 @@ class Settings:
 
     BASE_DIR: Path = BASE_DIR
     MODEL_DIR: str = os.path.join(BASE_DIR, "models")
-    MODEL_FILE: str = os.getenv("MODEL_FILE", "conan-embedding-v1-q4_k_m.gguf")
-
+    MODEL_FILE: str = os.getenv("MODEL_FILE", "onnx_model/model.onnx")
+    TOKENIZER_PATH: str = os.getenv("TOKENIZER_PATH", "onnx_model/tokenizer.json")
     GGML_QUIET: bool = os.getenv("GGML_QUIET", "1") == "1"
     LLAMA_VERBOSE: bool = os.getenv("LLAMA_VERBOSE", "0") == "1"
     LLAMA_CTX_SIZE: int = int(os.getenv("LLAMA_CTX_SIZE", "512"))
 
-    @property
-    def MODEL_PATH(self) -> str:
+    def getModelPath(self) -> str:
         return os.path.join(self.MODEL_DIR, self.MODEL_FILE)
+
+    def getTokenizerPath(self) -> str:
+        return os.path.join(self.MODEL_DIR, self.TOKENIZER_PATH)
 
     def log_config(self) -> None:
         """打印当前配置"""
@@ -62,7 +64,8 @@ class Settings:
             f"  BASE_DIR: {self.BASE_DIR}\n"
             f"  MODEL_DIR: {self.MODEL_DIR}\n"
             f"  MODEL_FILE: {self.MODEL_FILE}\n"
-            f"  MODEL_PATH: {self.MODEL_PATH}\n"
+            f"  MODEL_PATH: {self.getModelPath()}\n"
+            f"  TOKENIZER_PATH: {self.getTokenizerPath()}\n"
             f"  GGML_QUIET: {self.GGML_QUIET}\n"
             f"  LLAMA_VERBOSE: {self.LLAMA_VERBOSE}\n"
             f"  LLAMA_CTX_SIZE: {self.LLAMA_CTX_SIZE}"
