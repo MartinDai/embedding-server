@@ -11,7 +11,7 @@ RUN dnf install -y gcc gcc-c++ make git
 RUN dnf install -y openblas
 
 RUN pip3 install PyInstaller==6.12.0
-RUN pip3 install --no-binary numpy numpy==2.2.3
+RUN pip3 install --no-binary numpy numpy==2.2.4
 
 WORKDIR /app
 COPY requirements.txt ./
