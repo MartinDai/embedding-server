@@ -45,14 +45,18 @@ class Settings:
 
     BASE_DIR: Path = BASE_DIR
     MODEL_DIR: str = os.path.join(BASE_DIR, "models")
-    MODEL_FILE: str = os.getenv("MODEL_FILE", "onnx_model/model.onnx")
-    TOKENIZER_PATH: str = os.getenv("TOKENIZER_PATH", "onnx_model/tokenizer.json")
+    GGUF_MODEL_PATH: str = os.getenv("GGUF_MODEL_PATH", "embedding.gguf")
+    ONNX_MODEL_PATH: str = os.getenv("ONNX_MODEL_PATH", "onnx/model.onnx")
+    TOKENIZER_PATH: str = os.getenv("TOKENIZER_PATH", "onnx/tokenizer.json")
     GGML_QUIET: bool = os.getenv("GGML_QUIET", "1") == "1"
     LLAMA_VERBOSE: bool = os.getenv("LLAMA_VERBOSE", "0") == "1"
     LLAMA_CTX_SIZE: int = int(os.getenv("LLAMA_CTX_SIZE", "512"))
 
-    def getModelPath(self) -> str:
-        return os.path.join(self.MODEL_DIR, self.MODEL_FILE)
+    def getGgufModelPath(self) -> str:
+        return os.path.join(self.MODEL_DIR, self.GGUF_MODEL_PATH)
+
+    def getOnnxModelPath(self) -> str:
+        return os.path.join(self.MODEL_DIR, self.ONNX_MODEL_PATH)
 
     def getTokenizerPath(self) -> str:
         return os.path.join(self.MODEL_DIR, self.TOKENIZER_PATH)
@@ -63,8 +67,8 @@ class Settings:
             "Current Settings:\n"
             f"  BASE_DIR: {self.BASE_DIR}\n"
             f"  MODEL_DIR: {self.MODEL_DIR}\n"
-            f"  MODEL_FILE: {self.MODEL_FILE}\n"
-            f"  MODEL_PATH: {self.getModelPath()}\n"
+            f"  GGUF_MODEL_PATH: {self.getGgufModelPath()}\n"
+            f"  ONNX_MODEL_PATH: {self.getOnnxModelPath()}\n"
             f"  TOKENIZER_PATH: {self.getTokenizerPath()}\n"
             f"  GGML_QUIET: {self.GGML_QUIET}\n"
             f"  LLAMA_VERBOSE: {self.LLAMA_VERBOSE}\n"

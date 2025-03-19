@@ -11,7 +11,7 @@ from src.utils.logger import logger
 class GgufModelManager:
     def __init__(self):
         self.llm: Optional[Llama] = None
-        self.model_path = settings.MODEL_PATH
+        self.model_path = settings.getGgufModelPath()
 
     def initialize(self):
         """初始化模型"""

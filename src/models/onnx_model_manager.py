@@ -14,7 +14,7 @@ class OnnxModelManager:
         self.session: Optional[ort.InferenceSession] = None
         self.tokenizer = None
         # 设置 ONNX 模型路径
-        self.model_path = settings.getModelPath()
+        self.onnx_model_path = settings.getOnnxModelPath()
         # 如果你的模型文件夹中还有单独的 tokenizer 文件夹或配置文件，可以相应调整
         self.tokenizer_path = settings.getTokenizerPath()
 
@@ -24,16 +24,25 @@ class OnnxModelManager:
             logger.info("Model already initialized")
             return
 
-        logger.info(f"Loading ONNX model from: {self.model_path}")
-        if not os.path.exists(self.model_path):
-            logger.error(f"Model file not found at {self.model_path}")
+        logger.info(f"Loading ONNX model from: {self.onnx_model_path}")
+        if not os.path.exists(self.onnx_model_path):
+            logger.error(f"Model file not found at {self.onnx_model_path}")
             sys.exit(1)
 
         try:
+            # 创建会话选项
+            session_options = ort.SessionOptions()
+            # 动态获取 CPU 核心数并设置线程数
+            cpu_count = os.cpu_count() or 4  # 如果获取失败，默认使用 4
+            session_options.intra_op_num_threads = cpu_count
+            session_options.inter_op_num_threads = 1
+            session_options.graph_optimization_level = ort.GraphOptimizationLevel.ORT_ENABLE_ALL  # 启用所有优化
+
             # 加载 ONNX 模型
             self.session = ort.InferenceSession(
-                self.model_path,
-                providers=['CPUExecutionProvider']  # 可根据需要改为 'CUDAExecutionProvider'
+                self.onnx_model_path,
+                sess_options=session_options,  # 传入会话选项
+                providers=['CPUExecutionProvider']
             )
             # 加载 tokenizer 并启用截断
             self.tokenizer = Tokenizer.from_file(self.tokenizer_path)
