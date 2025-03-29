@@ -1,0 +1,22 @@
+[project]
+name = "embedding-server"
+version = "1.0.0"
+description = "a embedding service serve by http"
+authors = [
+    {name = "MartinDai",email = "xiaomingys@gmail.com"},
+]
+readme = "README.md"
+requires-python = "==3.12.*"
+dependencies = [
+    "Flask==3.1.0",
+    "gunicorn==23.0.0",
+    "numpy==2.2.4",
+    "onnxruntime==1.21.0",
+    "dotenv==0.9.9",
+    "python-dotenv==1.0.1",
+    "tokenizers==0.21.1"
+]
+license = {text = "MIT"}
+
+[tool.pdm]
+distribution = false

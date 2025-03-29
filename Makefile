@@ -1,55 +1,49 @@
-# 获取系统信息
-UNAME_S := $(shell uname -s)
-UNAME_M := $(shell uname -m)
+VERSION=1.0.0
+# 系统信息检测
+OS := $(shell uname -s)
+ARCH := $(shell uname -m)
 
-# 检测系统架构并选择对应目标
-ifeq ($(UNAME_S),Linux)
-    ifeq ($(UNAME_M),x86_64)
-        TARGET = linux-amd64
-    else ifeq ($(UNAME_M),aarch64)
-        TARGET = linux-arm64
+# 支持的架构映射
+SUPPORTED_LINUX_ARCH := x86_64:aarch64
+SUPPORTED_DARWIN_ARCH := arm64
+
+# 目标架构映射
+ARCH_TARGET_x86_64 := amd64
+ARCH_TARGET_aarch64 := arm64
+ARCH_TARGET_arm64 := arm64
+
+# 根据系统和架构确定目标
+ifeq ($(OS),Linux)
+    ifneq ($(filter $(ARCH),$(subst :, ,$(SUPPORTED_LINUX_ARCH))),)
+        TARGET := linux-$(ARCH_TARGET_$(ARCH))
     else
-        $(error Unsupported architecture: $(UNAME_M))
+        $(error Unsupported Linux architecture: $(ARCH). Supported: $(SUPPORTED_LINUX_ARCH))
     endif
-else ifeq ($(UNAME_S),Darwin)
-    ifeq ($(UNAME_M),arm64)
-        TARGET = darwin-arm64
+else ifeq ($(OS),Darwin)
+    ifneq ($(filter $(ARCH),$(subst :, ,$(SUPPORTED_DARWIN_ARCH))),)
+        TARGET := linux-$(ARCH_TARGET_$(ARCH))
     else
-        $(error Unsupported architecture for macOS: $(UNAME_M))
+        $(error Unsupported macOS architecture: $(ARCH). Supported: $(SUPPORTED_DARWIN_ARCH))
     endif
 else
-    $(error Unsupported OS: $(UNAME_S))
+    $(error Unsupported OS: $(OS). Supported: Linux, Darwin)
 endif
 
 # 默认执行目标
 .DEFAULT_GOAL := build
 
-.PHONY: pre build linux-amd64 linux-arm64 darwin-arm64
-
-# 预安装依赖
-pre:
-	pip install -r requirements.txt
-	pip install pyinstaller
-
-# 通用的 PyInstaller 参数
-PYINSTALLER_BASE_OPTS = --strip --noupx \
-	--add-data 'models/:models/' \
-	--add-data '.env:.' \
-	--hidden-import gunicorn \
-	--collect-all gunicorn \
-	--hidden-import llama_cpp
+.PHONY: build linux-amd64 linux-arm64 clean
 
 # 构建规则
 build: $(TARGET)
 
 linux-amd64:
-	docker buildx build --platform linux/amd64 -t embedding-server-amd64 -o type=docker .
+	@echo "Building for linux/amd64..."
+	docker buildx build --platform linux/amd64 -t embedding-server-amd64:$(VERSION) -o type=docker .
 
 linux-arm64:
-	docker buildx build --platform linux/arm64 -t embedding-server-arm64 -o type=docker .
+	@echo "Building for linux/arm64..."
+	docker buildx build --platform linux/arm64 -t embedding-server-arm64:$(VERSION) -o type=docker .
 
-darwin-arm64: pre
-	rm -rf dist/embedding-server-darwin-arm64
-	python3 -m PyInstaller $(PYINSTALLER_BASE_OPTS) \
-		--add-binary '.venv/lib/python3.12/site-packages/llama_cpp:llama_cpp' \
-		run.py -n embedding-server-darwin-arm64
+clean:
+	docker buildx prune -f

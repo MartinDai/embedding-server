@@ -1,39 +1,45 @@
 import sys
 import traceback
 
-from src import create_app
-from src.utils.gunicorn_app import StandaloneApplication
-from src.utils.logger import logger
+from gunicorn.app.base import BaseApplication
+
+from app.main import app
+from app.utils.logger import logger
 
 
-# 判断是否为 PyInstaller 打包环境
-def is_packaged():
-    return getattr(sys, 'frozen', False)
+class GunicornApp(BaseApplication):
+    def __init__(self, application, options=None):
+        self.options = options or {}
+        self.application = application
+        super().__init__()
+
+    def load_config(self):
+        # 应用传入的配置选项
+        for key, value in self.options.items():
+            self.cfg.set(key.lower(), value)
+
+    def load(self):
+        # 返回 WSGI 应用
+        return self.application
 
 
 if __name__ == '__main__':
-    logger.info("Server start")
-    app = create_app()
+    logger.info("Starting Embedding Server")
 
-    if is_packaged():
-        logger.info("Starting Gunicorn in packaged mode")
-        options = {
-            'bind': '0.0.0.0:9999',
-            'workers': 1,
-            'threads': 4,
-            'worker_class': 'gthread',
-            'timeout': 60,
-            'loglevel': 'info',
-        }
-        try:
-            logger.info("Attempting to start Gunicorn with options: %s", options)
-            gunicorn_app = StandaloneApplication(app, options)
-            gunicorn_app.run()
-        except Exception as e:
-            logger.error(f"Gunicorn failed to start: {str(e)}\n{traceback.format_exc()}")
-            sys.exit(1)
-        finally:
-            logger.info("Main block completed")
-    else:
-        logger.info("Starting Flask development server")
-        app.run(host='0.0.0.0', port=9999, debug=False)
+    options = {
+        'bind': '0.0.0.0:8080',
+        'workers': 1,
+        'threads': 4,
+        'worker_class': 'gthread',
+        'timeout': 60,
+        'loglevel': 'info',
+    }
+    try:
+        logger.info("Attempting to start Gunicorn with options: %s", options)
+        gunicorn_app = GunicornApp(app, options)
+        gunicorn_app.run()
+    except Exception as e:
+        logger.error(f"Gunicorn failed to start: {str(e)}\n{traceback.format_exc()}")
+        sys.exit(1)
+    finally:
+        logger.info("Main block completed")

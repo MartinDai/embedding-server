@@ -1,7 +1,7 @@
 from flask import request, jsonify, Blueprint
 
-from src.models.onnx_model_manager import onnx_model_manager
-from src.utils.logger import logger
+from app.model.onnx_model_manager import model_manager
+from app.utils.logger import logger
 
 embedding_bp = Blueprint("embedding", __name__)
 
@@ -15,7 +15,7 @@ def embedding_endpoint():
         if isinstance(texts, str):
             texts = [texts]
 
-        embeddings = [onnx_model_manager.get_embedding(text) for text in texts]
+        embeddings = [model_manager.get_embedding(text) for text in texts]
         logger.info(f"Generated embeddings for {len(texts)} texts")
         return jsonify({
             'status': 'success',

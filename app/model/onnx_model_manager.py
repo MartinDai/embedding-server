@@ -6,15 +6,15 @@ import numpy as np
 import onnxruntime as ort
 from tokenizers import Tokenizer
 
-from src.config.settings import settings
-from src.utils.logger import logger
+from app.config.settings import settings
+from app.utils.logger import logger
 
 class OnnxModelManager:
     def __init__(self):
         self.session: Optional[ort.InferenceSession] = None
         self.tokenizer = None
         # 设置 ONNX 模型路径
-        self.onnx_model_path = settings.getOnnxModelPath()
+        self.model_path = settings.getModelPath()
         # 如果你的模型文件夹中还有单独的 tokenizer 文件夹或配置文件，可以相应调整
         self.tokenizer_path = settings.getTokenizerPath()
 
@@ -24,9 +24,9 @@ class OnnxModelManager:
             logger.info("Model already initialized")
             return
 
-        logger.info(f"Loading ONNX model from: {self.onnx_model_path}")
-        if not os.path.exists(self.onnx_model_path):
-            logger.error(f"Model file not found at {self.onnx_model_path}")
+        logger.info(f"Loading ONNX model from: {self.model_path}")
+        if not os.path.exists(self.model_path):
+            logger.error(f"Model file not found at {self.model_path}")
             sys.exit(1)
 
         try:
@@ -40,7 +40,7 @@ class OnnxModelManager:
 
             # 加载 ONNX 模型
             self.session = ort.InferenceSession(
-                self.onnx_model_path,
+                self.model_path,
                 sess_options=session_options,  # 传入会话选项
                 providers=['CPUExecutionProvider']
             )
@@ -77,4 +77,4 @@ class OnnxModelManager:
 
 
 # 单例实例
-onnx_model_manager = OnnxModelManager()
+model_manager = OnnxModelManager()
